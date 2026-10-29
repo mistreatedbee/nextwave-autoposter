@@ -5,13 +5,14 @@ on:
     - cron: "7 6 * * *"    # ~08:07 South Africa time: group pack email + flyer posts
     - cron: "23 8 * * *"   # ~10:23 South Africa time: text post 1
     - cron: "13 11 * * *"  # ~13:13 South Africa time: text post 2
+    - cron: "7 14 * * *"   # ~16:07 South Africa time: reel
     - cron: "11 17 * * *"  # ~19:11 South Africa time: text post 3
   workflow_dispatch:
     inputs:
       mode:
         description: "What to run"
         type: choice
-        options: [check, flyer, text, pack]
+        options: [check, flyer, text, pack, reel]
         default: check
       dry_run:
         description: "Dry run (post nothing)"
@@ -75,6 +76,10 @@ jobs:
       - name: Post text (midday)
         if: github.event_name == 'schedule' && github.event.schedule == '13 11 * * *'
         run: python post.py text --slot 1
+
+      - name: Post reel
+        if: github.event_name == 'schedule' && github.event.schedule == '7 14 * * *'
+        run: python post.py reel
 
       - name: Post text (evening)
         if: github.event_name == 'schedule' && github.event.schedule == '11 17 * * *'

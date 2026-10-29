@@ -76,6 +76,10 @@ class Flyer:
     def png(self) -> Path:
         return ROOT / "flyers" / f"{self.id}.png"
 
+    @property
+    def video(self) -> Path:
+        return ROOT / "videos" / f"{self.id}.mp4"
+
     def feed_jpg(self) -> Path:
         return ROOT / "images" / "feed" / f"{self.id}.jpg"
 

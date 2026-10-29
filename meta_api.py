@@ -137,16 +137,47 @@ class MetaClient:
         photo = self._upload_photo(image, published=False)
         return self._request("POST", f"{self.page_id}/photo_stories", data={"photo_id": photo["id"]})
 
+    def fb_post_reel(self, video: Path, description: str) -> dict:
+        """Facebook Page Reel: start -> upload bytes -> finish (publish). None of it is retried."""
+        video = Path(video)
+        size = video.stat().st_size
+        start = self._request("POST", f"{self.page_id}/video_reels", data={"upload_phase": "start"})
+        video_id, upload_url = start["video_id"], start["upload_url"]
+        headers = {"Authorization": f"OAuth {self.token}", "offset": "0", "file_size": str(size)}
+        try:
+            resp = self.session.request("POST", upload_url, headers=headers,
+                                        data=video.read_bytes(), timeout=UPLOAD_TIMEOUT)
+        except requests.RequestException as e:
+            raise MetaError(self._scrub(f"Network error uploading reel: {type(e).__name__}: {e}"))
+        try:
+            body = resp.json()
+        except ValueError:
+            body = {}
+        if resp.status_code >= 400 or not body.get("success", True) or "error" in body:
+            raise self._error_from(resp.status_code, body)
+        return self._request("POST", f"{self.page_id}/video_reels", data={
+            "upload_phase": "finish", "video_id": video_id, "video_state": "PUBLISHED",
+            "description": description})
+
     # ---- Instagram -----------------------------------------------------
     def ig_post_image(self, image_url: str, caption: str | None = None, story: bool = False,
                       poll_interval: float = 3.0, timeout: float = 90.0) -> dict:
-        if not self.ig_user_id:
-            raise MetaError("META_IG_USER_ID is not set.")
         data = {"image_url": image_url}
         if story:
             data["media_type"] = "STORIES"
         elif caption:
             data["caption"] = caption
+        return self._ig_publish(data, poll_interval, timeout)
+
+    def ig_post_reel(self, video_url: str, caption: str, poll_interval: float = 5.0,
+                     timeout: float = 300.0) -> dict:
+        data = {"media_type": "REELS", "video_url": video_url, "caption": caption,
+                "share_to_feed": "true"}
+        return self._ig_publish(data, poll_interval, timeout)
+
+    def _ig_publish(self, data: dict, poll_interval: float, timeout: float) -> dict:
+        if not self.ig_user_id:
+            raise MetaError("META_IG_USER_ID is not set.")
         # Creating a container publishes nothing, so retrying it is safe.
         container = self._request("POST", f"{self.ig_user_id}/media", data=data, retry=True)
         cid = container["id"]
@@ -157,12 +188,12 @@ class MetaClient:
             if status == "FINISHED":
                 break
             if status in ("ERROR", "EXPIRED"):
-                raise MetaError(f"Instagram could not process the image (status {status}). "
-                                "Check the image URL is public and the file is a valid JPEG.")
+                raise MetaError(f"Instagram could not process the media (status {status}). "
+                                "Check the URL is public and the file format is valid.")
             if i < polls - 1:
                 self.sleep(poll_interval)
         else:
-            raise MetaError(f"Timed out after {timeout:.0f}s waiting for Instagram to process the image "
+            raise MetaError(f"Timed out after {timeout:.0f}s waiting for Instagram to process the media "
                             f"(last status {status}).")
         # Publishing is NEVER retried.
         return self._request("POST", f"{self.ig_user_id}/media_publish", data={"creation_id": cid})

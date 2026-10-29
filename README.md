@@ -9,6 +9,7 @@ Posts one NextWave Digital Solutions flyer a day to a Facebook Page (feed + stor
 | Time | What |
 |---|---|
 | ~08:07 | Group pack email, then flyer → Facebook feed, Facebook story, Instagram feed, Instagram story |
+| ~16:07 | Reel (a different flyer's video than the morning flyer, offset by 2 days) → Instagram Reels + Facebook Reels |
 | ~10:23, ~13:13, ~19:11 | Three text-only tips a day → Facebook Page (Instagram has no text-only posts) |
 
 Rotation is stateless: with the SAST date ordinal, `flyer = ordinal % 5` and `caption variant = ordinal // 5 % 3`. Text tips: each day uses 3 consecutive tips (`--slot 0/1/2`), so nothing repeats until the whole tip list has been used (about 20 days). Check any day with `python3 post.py flyer --dry-run --date 2026-12-01`.
@@ -75,6 +76,9 @@ Add secrets in **Repo → Settings → Secrets and variables → Actions → New
 3. Mode `flyer`, dry run **off**: a real post to all four places. Look at your Page and Instagram.
 
 After that the schedules run by themselves.
+
+## Videos / Reels
+`python3 make_videos.py` (needs `pip3 install -r requirements-video.txt`, macOS fonts) renders a 12-second vertical video per flyer into `videos/<id>.mp4`. Edit the wording in the `VIDEOS` section of `make_videos.py`. Commit `videos/` so Instagram can fetch it. Post one manually with `python3 post.py reel --dry-run` / `python3 post.py reel --only facebook_reel`. Videos are silent; add music by hand if you post manually.
 
 ## Good to know
 - GitHub **pauses scheduled workflows after ~60 days without repo activity**. Push a small commit (or run the workflow manually) now and then; GitHub emails you before it pauses.

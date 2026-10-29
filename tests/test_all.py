@@ -198,6 +198,46 @@ class MetaClientTests(unittest.TestCase):
         c.ig_post_image("u", caption="c")
         self.assertEqual(s.paths()[:2], [("POST", "IG/media"), ("POST", "IG/media")])
 
+    def test_ig_reel_flow(self):
+        c, s = make(FakeResp(body={"id": "C1"}), FakeResp(body={"status_code": "IN_PROGRESS"}),
+                    FakeResp(body={"status_code": "FINISHED"}), FakeResp(body={"id": "M1"}))
+        c.ig_post_reel("https://x/v.mp4", "cap")
+        data = s.calls[0][2]["data"]
+        self.assertEqual((data["media_type"], data["video_url"], data["caption"]), ("REELS", "https://x/v.mp4", "cap"))
+        self.assertEqual(s.paths(), [("POST", "IG/media"), ("GET", "C1"), ("GET", "C1"),
+                                     ("POST", "IG/media_publish")])
+
+    def test_fb_reel_flow(self):
+        vid = self.img.parent / "v.mp4"
+        vid.write_bytes(b"0123456789")
+        c, s = make(FakeResp(body={"video_id": "V1", "upload_url": "https://rupload.example/v1"}),
+                    FakeResp(body={"success": True}), FakeResp(body={"success": True}))
+        c.fb_post_reel(vid, "desc")
+        self.assertEqual([m for m, _, _ in s.calls], ["POST"] * 3)
+        self.assertTrue(s.calls[0][1].endswith("PAGE/video_reels"))
+        self.assertEqual(s.calls[0][2]["data"]["upload_phase"], "start")
+        self.assertEqual(s.calls[1][1], "https://rupload.example/v1")
+        self.assertEqual(s.calls[1][2]["headers"]["file_size"], "10")
+        self.assertEqual(s.calls[1][2]["data"], b"0123456789")
+        fin = s.calls[2][2]["data"]
+        self.assertEqual((fin["upload_phase"], fin["video_id"], fin["video_state"]),
+                         ("finish", "V1", "PUBLISHED"))
+
+    def test_fb_reel_failures_not_retried_and_scrubbed(self):
+        vid = self.img.parent / "v.mp4"
+        vid.write_bytes(b"x")
+        c, s = make(FakeResp(body={"video_id": "V1", "upload_url": "https://r/u"}),
+                    requests.ConnectionError(f"boom {TOKEN}"))
+        with self.assertRaises(MetaError) as cm:
+            c.fb_post_reel(vid, "d")
+        self.assertNotIn(TOKEN, str(cm.exception))
+        self.assertEqual(len(s.calls), 2)  # no finish call, no retry
+
+    def test_reel_videos_exist_and_valid(self):
+        for f in content.Content().flyers:
+            if f.video.exists():
+                self.assertGreater(f.video.stat().st_size, 10_000)
+
     def test_non_transient_not_retried(self):
         c, s = make(FakeResp(400, {"error": {"message": "bad", "code": 100}}), FakeResp(body={}))
         with self.assertRaises(MetaError):

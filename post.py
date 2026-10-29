@@ -5,6 +5,7 @@
   python3 post.py check
   python3 post.py flyer [--dry-run] [--flyer ID] [--only facebook_feed,...] [--date YYYY-MM-DD]
   python3 post.py text  [--dry-run] [--date ...]
+  python3 post.py reel  [--dry-run] [--only instagram_reel,facebook_reel]
   python3 post.py pack  [--dry-run] [--flyer ID] [--date ...]
 """
 from __future__ import annotations
@@ -12,6 +13,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 import content
@@ -52,6 +54,24 @@ def image_url(kind: str, flyer_id: str, dry_run: bool) -> str:
             raise MetaError("Cannot build the public image URL: set IMAGE_BASE_URL "
                             "(or GITHUB_REPOSITORY and GITHUB_REF_NAME).")
     return f"{base.rstrip('/')}/{kind}/{flyer_id}.jpg"
+
+
+def video_url(flyer_id: str, dry_run: bool) -> str:
+    base = os.environ.get("VIDEO_BASE_URL")
+    if not base:
+        img = os.environ.get("IMAGE_BASE_URL")
+        if img:
+            base = img.rstrip("/").removesuffix("/images") + "/videos"
+        else:
+            repo, ref = os.environ.get("GITHUB_REPOSITORY"), os.environ.get("GITHUB_REF_NAME")
+            if repo and ref:
+                base = f"https://raw.githubusercontent.com/{repo}/{ref}/videos"
+            elif dry_run:
+                base = "https://raw.githubusercontent.com/<user>/<repo>/<branch>/videos"
+            else:
+                raise MetaError("Cannot build the public video URL: set VIDEO_BASE_URL "
+                                "(or GITHUB_REPOSITORY and GITHUB_REF_NAME).")
+    return f"{base.rstrip('/')}/{flyer_id}.mp4"
 
 
 def client() -> MetaClient:
@@ -150,6 +170,45 @@ def cmd_flyer(args) -> int:
     return run_steps([(s, jobs[s]) for s in wanted])
 
 
+REEL_STEPS = ["instagram_reel", "facebook_reel"]
+REEL_DAY_OFFSET = 2  # the reel shows a different flyer than today's image post
+
+
+def cmd_reel(args) -> int:
+    c = content.Content()
+    day = content.parse_date(args.date) + timedelta(days=REEL_DAY_OFFSET)
+    flyer, variant = c.flyer_for(day, args.flyer)
+    wanted = args.only.split(",") if args.only else REEL_STEPS
+    bad = [s for s in wanted if s not in REEL_STEPS]
+    if bad:
+        print(f"Unknown step(s): {', '.join(bad)}. Choose from: {', '.join(REEL_STEPS)}")
+        return 2
+    video = flyer.video
+    ig_caption, fb_caption = flyer.caption(variant, "instagram"), flyer.caption(variant, "facebook")
+    print(f"reel for flyer '{flyer.id}', caption variant {variant + 1}/{content.VARIANTS}")
+    if not video.exists():
+        msg = f"Missing video file {video.relative_to(content.ROOT)} (run make_videos.py)"
+        print(f"FAIL  setup: {msg}")
+        annotate_error("reel", msg)
+        return 1
+    if args.dry_run:
+        for s in wanted:
+            print(f"\n--- DRY RUN: {s} ---")
+            print(f"video_url: {video_url(flyer.id, True)}" if s == "instagram_reel"
+                  else f"file: {video.relative_to(content.ROOT)}")
+            print(ig_caption if s == "instagram_reel" else fb_caption)
+        return 0
+    try:
+        meta = client()
+    except MetaError as e:
+        print(f"FAIL  setup: {e}")
+        annotate_error("setup", str(e))
+        return 1
+    jobs = {"instagram_reel": lambda: meta.ig_post_reel(video_url(flyer.id, False), ig_caption),
+            "facebook_reel": lambda: meta.fb_post_reel(video, fb_caption)}
+    return run_steps([(s, jobs[s]) for s in wanted])
+
+
 def cmd_text(args) -> int:
     c = content.Content()
     message = c.text_post(content.parse_date(args.date), args.slot)
@@ -192,10 +251,10 @@ def cmd_pack(args) -> int:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("mode", choices=["validate", "check", "flyer", "text", "pack"])
+    ap.add_argument("mode", choices=["validate", "check", "flyer", "text", "pack", "reel"])
     ap.add_argument("--dry-run", action="store_true", help="show what would be posted; post nothing")
     ap.add_argument("--flyer", help="flyer id override")
-    ap.add_argument("--only", help="comma-separated steps: " + ",".join(STEPS))
+    ap.add_argument("--only", help="comma-separated steps: " + ",".join(STEPS + REEL_STEPS))
     ap.add_argument("--slot", type=int, choices=range(content.TEXT_SLOTS), default=0,
                     help="text mode: which of the day's posts (0=morning, 1=midday, 2=evening)")
     ap.add_argument("--date", help="YYYY-MM-DD (default: today, South Africa time)")
@@ -203,7 +262,7 @@ def main(argv=None) -> int:
     load_env()
     try:
         return {"validate": cmd_validate, "check": cmd_check, "flyer": cmd_flyer,
-                "text": cmd_text, "pack": cmd_pack}[args.mode](args)
+                "text": cmd_text, "pack": cmd_pack, "reel": cmd_reel}[args.mode](args)
     except ValueError as e:
         print(f"ERROR: {e}")
         annotate_error(args.mode, str(e))
