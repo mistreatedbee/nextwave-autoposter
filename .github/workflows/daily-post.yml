@@ -1,0 +1,79 @@
+name: Daily post
+
+on:
+  schedule:
+    - cron: "7 6 * * *"    # ~08:07 South Africa time: group pack email + flyer posts
+    - cron: "13 11 * * *"  # ~13:13 South Africa time: text post
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "What to run"
+        type: choice
+        options: [check, flyer, text, pack]
+        default: check
+      dry_run:
+        description: "Dry run (post nothing)"
+        type: boolean
+        default: true
+      flyer:
+        description: "Optional flyer id override (e.g. ai-automation)"
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-post
+  cancel-in-progress: false
+
+env:
+  META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+  META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+  META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+  SMTP_USER: ${{ secrets.SMTP_USER }}
+  SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+  NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # ---- scheduled: morning ----
+      - name: Group pack email
+        if: github.event_name == 'schedule' && github.event.schedule == '7 6 * * *'
+        continue-on-error: true
+        run: python post.py pack
+
+      - name: Post flyer
+        if: github.event_name == 'schedule' && github.event.schedule == '7 6 * * *'
+        run: python post.py flyer
+
+      # ---- scheduled: afternoon ----
+      - name: Post text
+        if: github.event_name == 'schedule' && github.event.schedule == '13 11 * * *'
+        run: python post.py text
+
+      # ---- manual ----
+      - name: Manual run
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          INPUT_MODE: ${{ inputs.mode }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          INPUT_FLYER: ${{ inputs.flyer }}
+        run: |
+          args=("$INPUT_MODE")
+          if [ "$INPUT_DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          if [ -n "$INPUT_FLYER" ]; then args+=(--flyer "$INPUT_FLYER"); fi
+          python post.py "${args[@]}"

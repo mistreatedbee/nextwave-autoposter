@@ -1,0 +1,78 @@
+{
+  "site": "www.nextwavedigitalsolutions.co.za",
+  "phone": "073 153 1188",
+  "email": "info@nextwavedigitalsolutions.co.za",
+  "common_hashtags": ["NextWaveDigital", "SouthAfrica", "SmallBusinessSA", "BuildGrowSucceed"],
+  "flyers": [
+    {
+      "id": "web-design-packages",
+      "title": "Web Design Packages",
+      "hashtags": ["WebDesign", "WebsiteDesign", "CoZa", "SmallBusiness", "SouthAfricanBusiness", "WebsiteForBusiness", "OnlinePresence", "MadeInSA"],
+      "captions": [
+        "Build. Grow. Succeed online. 🌐\n\nOur once-off web design packages are made for South African businesses:\n\n✅ Starter – R3500: free .co.za domain, 1 month hosting, unlimited emails, basic SEO setup, social media integration, mobile responsive, up to 5 pages\n\n✅ Professional – R5000: free .co.za domain, 3 months hosting, enhanced SEO, custom logo, Google Business optimisation, up to 10 pages\n\n✅ Premium – R7000: free .co.za domain, 12 months hosting, custom logo, ongoing support & maintenance, e-commerce integration if needed, unlimited pages\n\n📞 {phone}\n🌍 {site}\n✉️ {email}",
+        "Not sure which website package fits your business? 🤔\n\nStarter R3500 – up to 5 pages, free .co.za domain and basic SEO setup.\nProfessional R5000 – up to 10 pages, custom logo, enhanced SEO and Google Business optimisation.\nPremium R7000 – unlimited pages, 12 months hosting, ongoing support & maintenance.\n\nAll prices are once-off and every package is mobile responsive.\n\nMessage us on {phone} or visit {site} and we'll help you choose.",
+        "Your business deserves a website that works as hard as you do. 💼\n\nEvery NextWave web design package includes a free .co.za domain, mobile responsive design and social media integration. Pay once, no surprises:\n\n• Starter R3500\n• Professional R5000\n• Premium R7000\n\nSee what's included: {site}\nCall {phone} or email {email}."
+      ],
+      "group_captions": [
+        "Looking for a website for your business? 🌐 We build web design packages for South African businesses, all once-off pricing: Starter R3500 (up to 5 pages), Professional R5000 (up to 10 pages, custom logo, Google Business optimisation) and Premium R7000 (unlimited pages, 12 months hosting, ongoing support & maintenance). Every package includes a free .co.za domain and is mobile responsive.\n\n📞 {phone}\n🌍 {site}",
+        "Need a professional website without a monthly contract? NextWave Digital Solutions offers once-off packages from R3500, including a free .co.za domain, mobile responsive design and social media integration. Inbox me or call {phone} for details. More info: {site}"
+      ]
+    },
+    {
+      "id": "ecommerce-store",
+      "title": "Full Ecommerce Store",
+      "hashtags": ["Ecommerce", "OnlineStore", "SellOnline", "OnlineShopSA", "ShopOnline", "WebsiteDesign", "SmallBusiness", "MadeInSA"],
+      "captions": [
+        "Ready to sell online? 🛒\n\nOur Full Ecommerce Store is R5500 once-off and includes:\n\n✅ Unlimited products\n✅ Payment gateways setup\n✅ Training so you can run your store\n✅ Mobile friendly design\n✅ SSL, backups & security setup\n✅ 1 year hosting & domain included (renewal after that at your own cost)\n\nPerfect for clothing brands, beauty businesses, restaurants & cafes, online stores, tech stores and small businesses.\n\n📞 {phone}\n🌍 {site}\n✉️ {email}",
+        "Your shop, open 24/7. 🌙\n\nWe set up your full online store for R5500 once-off: unlimited products, payment gateways, mobile friendly design and security setup (SSL & backups). We also train you to manage it yourself.\n\nYear one hosting and domain are included.\n\nGet started: {site} or call {phone}.",
+        "Selling clothing, beauty products, food or tech? 👗💄🍽️💻\n\nA Full Ecommerce Store from NextWave Digital Solutions is R5500 once-off, with unlimited products, payment gateways setup, training and 1 year hosting & domain included.\n\nBuild. Grow. Succeed online.\n\nChat to us: {phone} · {email}"
+      ],
+      "group_captions": [
+        "Want to start selling online? 🛒 We build full ecommerce stores for South African businesses: R5500 once-off with unlimited products, payment gateways setup, training, mobile friendly design, SSL/backups/security setup and 1 year hosting & domain included (renewal after that at your own cost).\n\n📞 {phone}\n🌍 {site}",
+        "Clothing brand, beauty business, restaurant, café or tech store? We can build your online store for R5500 once-off, with training so you can manage it yourself. Call {phone} or inbox me. More info: {site}"
+      ]
+    },
+    {
+      "id": "ai-automation",
+      "title": "AI Automation",
+      "hashtags": ["AIAutomation", "BusinessAutomation", "AIChatbot", "WorkflowAutomation", "Automation", "SmallBusiness", "DigitalTransformation", "MadeInSA"],
+      "captions": [
+        "Let automation handle the repetitive work. 🤖\n\nOur AI Automation service is tailored to your business and integrated with the tools you already use. R9000 once-off setup, with training & support, and built to scale as you grow.\n\nExamples of what we can automate:\n• Email marketing\n• AI chatbot / live chat\n• Appointment scheduling\n• Lead capture & follow-up\n• Order & payment automation\n• Social media automation\n• CRM / pipeline\n• Reminders & reporting\n\n📞 {phone}\n🌍 {site}",
+        "What takes up most of your week? ⏳\n\nBookings, follow-ups, reminders, reports, replying to the same questions... much of it can be automated. We build automation tailored to your business and connect it to your existing tools, for R9000 once-off setup, including training & support.\n\nTell us about your workflow: {phone} or {email}",
+        "From AI chatbots to AI voice agents, lead capture to inventory, document and data automation. 🚀\n\nNextWave AI Automation is built around your business, scalable as you grow, and comes with training & support. R9000 once-off setup.\n\nBuild. Grow. Succeed online.\nSee more at {site}"
+      ],
+      "group_captions": [
+        "Want to save time on admin? 🤖 We set up AI automation tailored to your business and integrated with your tools: AI chatbot/live chat, appointment scheduling, lead capture & follow-up, email marketing, order/payment automation, reminders, reporting and more. R9000 once-off setup, with training & support.\n\n📞 {phone}\n🌍 {site}",
+        "Still doing bookings, follow-ups and reminders by hand? We build custom business automation for South African businesses, R9000 once-off setup. Inbox me or call {phone} to chat about what can be automated. {site}"
+      ]
+    },
+    {
+      "id": "landing-page",
+      "title": "Landing Page",
+      "hashtags": ["LandingPage", "WebDesign", "OnlineBooking", "WebsiteDesign", "SmallBusiness", "SEO", "GetOnline", "MadeInSA"],
+      "captions": [
+        "A professional landing page for R3000. Once-off. No monthly fees. 🎯\n\nIncluded:\n✅ Modern design\n✅ Chatbot integration\n✅ Business services section\n✅ Gallery / portfolio\n✅ Customer booking\n✅ Appointments management\n✅ Contracts / terms page\n✅ Mobile responsive\n✅ Fast loading & SEO optimised\n✅ Easy to edit\n\n📞 {phone}\n🌍 {site}\n✉️ {email}",
+        "Need one page that turns visitors into customers? 📲\n\nOur Landing Page is R3000 once-off with no monthly fees: modern design, a services section, gallery/portfolio, customer booking, chatbot integration, and it's fast loading, SEO optimised and easy to edit.\n\nStart here: {site} · {phone}",
+        "Simple. Fast. Yours. ⚡\n\nA NextWave landing page gives your business a modern, mobile responsive home online with booking and appointments management built in. R3000 once-off, no monthly fees.\n\nBuild. Grow. Succeed online.\nCall {phone} or email {email}."
+      ],
+      "group_captions": [
+        "Need a website but don't want monthly fees? 🎯 We build modern landing pages for R3000 once-off: services section, gallery/portfolio, customer booking, appointments management, chatbot integration, mobile responsive, fast loading & SEO optimised, easy to edit.\n\n📞 {phone}\n🌍 {site}",
+        "Landing page for your business: R3000 once-off, no monthly fees. Includes booking, chatbot integration and a contracts/terms page. Inbox me or call {phone}. More info: {site}"
+      ]
+    },
+    {
+      "id": "mobile-app",
+      "title": "Mobile App Development",
+      "hashtags": ["MobileApp", "AppDevelopment", "AndroidApp", "iOSApp", "AppDesign", "UIUX", "TechSA", "MadeInSA"],
+      "captions": [
+        "Got an app idea? Let's build it. 📱\n\nNextWave Digital Solutions offers custom mobile app design & development for South African businesses:\n\n✅ Android & iOS-ready\n✅ Secure login & user management\n✅ Real-time notifications\n✅ Booking, payments & chat\n✅ UI/UX design\n\nMessage us for a quote.\n\n📞 {phone}\n🌍 {site}\n✉️ {email}",
+        "Put your business in your customers' pockets. 📲\n\nWe design and develop custom mobile apps that are Android & iOS-ready, with secure login, real-time notifications and features like booking, payments and chat.\n\nTell us what you need: {phone} or {email}",
+        "From idea to app. 💡➡️📱\n\nCustom app design & development, thoughtful UI/UX design, and the features your users expect: secure login & user management, real-time notifications, booking, payments and chat.\n\nBuild. Grow. Succeed online.\nGet in touch: {site} · {phone}"
+      ],
+      "group_captions": [
+        "Looking for a mobile app developer? 📱 We offer custom app design & development, Android & iOS-ready, with secure login & user management, real-time notifications, booking/payments/chat and UI/UX design. Inbox me or call {phone} for a quote.\n\n🌍 {site}",
+        "Want an app for your business? NextWave Digital Solutions builds custom mobile apps for South African businesses. Features can include bookings, payments, chat and real-time notifications. Call {phone} or email {email}."
+      ]
+    }
+  ]
+}
