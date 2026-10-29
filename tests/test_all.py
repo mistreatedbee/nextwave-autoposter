@@ -62,8 +62,12 @@ class RotationTests(unittest.TestCase):
     def test_text_posts_cycle_all(self):
         c = content.Content()
         start = date(2026, 1, 1)
-        idx = {content.text_index(start + timedelta(days=i), 14) for i in range(14)}
-        self.assertEqual(len(idx), 14)
+        n = len(c.text["posts"])
+        days = n // content.TEXT_SLOTS
+        idx = [content.text_index(start + timedelta(days=i), n, s)
+               for i in range(days) for s in range(content.TEXT_SLOTS)]
+        self.assertEqual(len(set(idx)), len(idx))  # no repeats within a full cycle
+        self.assertNotEqual(c.text_post(start, 0), c.text_post(start, 1))
         self.assertIn("073 153 1188", c.text_post(start))
 
 

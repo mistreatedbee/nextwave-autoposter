@@ -3,7 +3,9 @@ name: Daily post
 on:
   schedule:
     - cron: "7 6 * * *"    # ~08:07 South Africa time: group pack email + flyer posts
-    - cron: "13 11 * * *"  # ~13:13 South Africa time: text post
+    - cron: "23 8 * * *"   # ~10:23 South Africa time: text post 1
+    - cron: "13 11 * * *"  # ~13:13 South Africa time: text post 2
+    - cron: "11 17 * * *"  # ~19:11 South Africa time: text post 3
   workflow_dispatch:
     inputs:
       mode:
@@ -19,6 +21,11 @@ on:
         description: "Optional flyer id override (e.g. ai-automation)"
         type: string
         required: false
+      slot:
+        description: "Text mode only: which post of the day (0 morning, 1 midday, 2 evening)"
+        type: choice
+        options: ["0", "1", "2"]
+        default: "0"
 
 permissions:
   contents: read
@@ -61,9 +68,17 @@ jobs:
         run: python post.py flyer
 
       # ---- scheduled: afternoon ----
-      - name: Post text
+      - name: Post text (morning)
+        if: github.event_name == 'schedule' && github.event.schedule == '23 8 * * *'
+        run: python post.py text --slot 0
+
+      - name: Post text (midday)
         if: github.event_name == 'schedule' && github.event.schedule == '13 11 * * *'
-        run: python post.py text
+        run: python post.py text --slot 1
+
+      - name: Post text (evening)
+        if: github.event_name == 'schedule' && github.event.schedule == '11 17 * * *'
+        run: python post.py text --slot 2
 
       # ---- manual ----
       - name: Manual run
@@ -72,8 +87,10 @@ jobs:
           INPUT_MODE: ${{ inputs.mode }}
           INPUT_DRY_RUN: ${{ inputs.dry_run }}
           INPUT_FLYER: ${{ inputs.flyer }}
+          INPUT_SLOT: ${{ inputs.slot }}
         run: |
           args=("$INPUT_MODE")
           if [ "$INPUT_DRY_RUN" = "true" ]; then args+=(--dry-run); fi
           if [ -n "$INPUT_FLYER" ]; then args+=(--flyer "$INPUT_FLYER"); fi
+          if [ "$INPUT_MODE" = "text" ]; then args+=(--slot "$INPUT_SLOT"); fi
           python post.py "${args[@]}"

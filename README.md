@@ -1,6 +1,6 @@
 # NextWave Auto-Poster
 
-Posts one NextWave Digital Solutions flyer a day to a Facebook Page (feed + story) and Instagram (feed + story), a text tip to the Page, and emails you a "group pack" to paste into Facebook groups by hand. Runs free on GitHub Actions using the Meta Graph API (`v26.0`, override with `GRAPH_API_VERSION`).
+Posts one NextWave Digital Solutions flyer a day to a Facebook Page (feed + story) and Instagram (feed + story), three text tips a day to the Page, and emails you a "group pack" to paste into Facebook groups by hand. Runs free on GitHub Actions using the Meta Graph API (`v26.0`, override with `GRAPH_API_VERSION`).
 
 **Not automated on purpose:** Facebook Groups and WhatsApp have no official posting API and automating them breaks Meta's rules. That is why you get the group pack email instead.
 
@@ -9,9 +9,9 @@ Posts one NextWave Digital Solutions flyer a day to a Facebook Page (feed + stor
 | Time | What |
 |---|---|
 | ~08:07 | Group pack email, then flyer → Facebook feed, Facebook story, Instagram feed, Instagram story |
-| ~13:13 | Text-only tip → Facebook Page (Instagram has no text-only posts) |
+| ~10:23, ~13:13, ~19:11 | Three text-only tips a day → Facebook Page (Instagram has no text-only posts) |
 
-Rotation is stateless: with the SAST date ordinal, `flyer = ordinal % 5` and `caption variant = ordinal // 5 % 3`. Text tips cycle through 14 in order. Check any day with `python3 post.py flyer --dry-run --date 2026-12-01`.
+Rotation is stateless: with the SAST date ordinal, `flyer = ordinal % 5` and `caption variant = ordinal // 5 % 3`. Text tips: each day uses 3 consecutive tips (`--slot 0/1/2`), so nothing repeats until the whole tip list has been used (about 20 days). Check any day with `python3 post.py flyer --dry-run --date 2026-12-01`.
 
 ## Setup (macOS, beginner)
 
@@ -92,7 +92,7 @@ python3 -m unittest discover -s tests
 Flyer ids: `web-design-packages`, `ecommerce-store`, `ai-automation`, `landing-page`, `mobile-app`.
 Image URLs default to `https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$GITHUB_REF_NAME/images/<kind>/<id>.jpg`; set `IMAGE_BASE_URL` (the `.../images` folder) to override for local runs.
 
-Edit wording in `captions.json` and `text_posts.json` (placeholders `{site}`, `{phone}`, `{email}`), then run `python3 post.py validate`. Limits enforced: Instagram ≤ 12 hashtags used (≤ 2200 characters, never more than 30), Facebook ≤ 4 hashtags.
+Add more tips to `text_posts.json` any time (keep at least 42). Edit wording in `captions.json` and `text_posts.json` (placeholders `{site}`, `{phone}`, `{email}`), then run `python3 post.py validate`. Limits enforced: Instagram ≤ 12 hashtags used (≤ 2200 characters, never more than 30), Facebook ≤ 4 hashtags.
 
 ## Troubleshooting
 | Code / message | Meaning and fix |

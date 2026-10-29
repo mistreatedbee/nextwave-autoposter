@@ -85,7 +85,7 @@ def cmd_validate(args) -> int:
         return 1
     c = content.Content()
     print(f"OK: {len(c.flyers)} flyers x {content.VARIANTS} captions, "
-          f"{len(c.text['posts'])} text posts, all limits respected.")
+          f"{len(c.text['posts'])} text posts ({content.TEXT_SLOTS}/day), all limits respected.")
     return 0
 
 
@@ -152,9 +152,9 @@ def cmd_flyer(args) -> int:
 
 def cmd_text(args) -> int:
     c = content.Content()
-    message = c.text_post(content.parse_date(args.date))
+    message = c.text_post(content.parse_date(args.date), args.slot)
     if args.dry_run:
-        print("--- DRY RUN: facebook text post ---")
+        print(f"--- DRY RUN: facebook text post (slot {args.slot}) ---")
         print(message)
         return 0
     try:
@@ -196,6 +196,8 @@ def main(argv=None) -> int:
     ap.add_argument("--dry-run", action="store_true", help="show what would be posted; post nothing")
     ap.add_argument("--flyer", help="flyer id override")
     ap.add_argument("--only", help="comma-separated steps: " + ",".join(STEPS))
+    ap.add_argument("--slot", type=int, choices=range(content.TEXT_SLOTS), default=0,
+                    help="text mode: which of the day's posts (0=morning, 1=midday, 2=evening)")
     ap.add_argument("--date", help="YYYY-MM-DD (default: today, South Africa time)")
     args = ap.parse_args(argv)
     load_env()

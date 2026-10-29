@@ -38,8 +38,12 @@ def rotation(day: date, n_flyers: int) -> tuple[int, int]:
     return ordinal % n_flyers, (ordinal // n_flyers) % VARIANTS
 
 
-def text_index(day: date, n_posts: int) -> int:
-    return day.toordinal() % n_posts
+TEXT_SLOTS = 3  # text posts per day: morning, midday, evening
+
+
+def text_index(day: date, n_posts: int, slot: int = 0) -> int:
+    """Stateless tip index; each day uses TEXT_SLOTS consecutive tips."""
+    return (day.toordinal() * TEXT_SLOTS + slot) % n_posts
 
 
 def _fill(text: str, data: dict) -> str:
@@ -107,9 +111,9 @@ class Content:
             idx = ids.index(flyer_id)
         return self.flyers[idx], variant
 
-    def text_post(self, day: date) -> str:
+    def text_post(self, day: date, slot: int = 0) -> str:
         posts = self.text["posts"]
-        body = posts[text_index(day, len(posts))]
+        body = posts[text_index(day, len(posts), slot)]
         return body + "\n\n" + _fill(self.text["footer"], self.data)
 
 
@@ -153,8 +157,10 @@ def validate(content: Content | None = None, check_images: bool = True) -> list[
         if check_images and not f.png.exists():
             problems.append(f"Missing flyer image {f.png.relative_to(ROOT)}")
     posts = c.text.get("posts", [])
-    if len(posts) != 14:
-        problems.append(f"text_posts.json should have 14 posts, has {len(posts)}")
+    if len(posts) < TEXT_SLOTS * 14:
+        problems.append(f"text_posts.json needs at least {TEXT_SLOTS * 14} posts, has {len(posts)}")
+    if len(set(posts)) != len(posts):
+        problems.append("text_posts.json has duplicate posts")
     for i, p in enumerate(posts):
         if not p.strip():
             problems.append(f"text post {i} is empty")
